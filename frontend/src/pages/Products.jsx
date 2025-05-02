@@ -1,27 +1,43 @@
 import { useState, useEffect } from "react";
-//import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/v1/products")
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    fetch("http://localhost:3000/api/v1/products", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => response.json())
       .then((data) => setProducts(data))
       .catch((error) => console.error("Error fetching products:", error));
-  }, []);
+  }, [navigate]);
 
   const handleAddToCart = (productId) => {
+    const token = localStorage.getItem("token");
     fetch("http://localhost:3000/api/v1/cart", {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ productId, quantity: 1 }),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data.message))
+      .then((data) => {
+        console.log(data.message);
+        navigate("/cart");
+      })
       .catch((error) => console.error("Error adding to cart:", error));
   };
 

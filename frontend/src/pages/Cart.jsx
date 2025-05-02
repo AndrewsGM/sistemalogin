@@ -1,14 +1,27 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/v1/cart")
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    fetch("http://localhost:3000/api/v1/cart", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => response.json())
       .then((data) => setCart(data))
       .catch((error) => console.error("Error fetching cart:", error));
-  }, []);
+  }, [navigate]);
 
   const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
 

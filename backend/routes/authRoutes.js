@@ -5,6 +5,20 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 require("dotenv").config();
 
+const authenticateToken = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token)
+    return res
+      .status(401)
+      .json({ message: "Access denied, no token provided" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+    req.user = decoded;
+    next();
+  });
+};
+
 router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -64,6 +78,20 @@ router.post("/login", async (req, res) => {
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
+  }
+});
+
+router.get("/profile", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("email");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching profile", error: error.message });
   }
 });
 

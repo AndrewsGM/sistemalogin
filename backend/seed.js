@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
 const Product = require("./models/Product");
+const Cart = require("./models/Cart");
 require("dotenv").config();
 
 const seedUsers = [
@@ -39,6 +40,9 @@ const seedDatabase = async () => {
     await Product.deleteMany();
     await Product.insertMany(seedProducts);
     console.log("Products seeded successfully");
+
+    await Cart.deleteMany();
+    console.log("Cleared existing cart items");
 
     mongoose.connection.close();
     console.log("Seeding completed, connection closed");
