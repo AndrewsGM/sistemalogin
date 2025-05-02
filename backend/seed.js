@@ -1,11 +1,21 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
+const Product = require("./models/Product");
 require("dotenv").config();
 
 const seedUsers = [
   { email: "admin@example.com", password: "admin123" },
   { email: "user@example.com", password: "user123" },
+];
+
+const seedProducts = [
+  {
+    name: "Camiseta",
+    price: 29.99,
+    description: "Camiseta de algodão confortável",
+  },
+  { name: "Calça Jeans", price: 59.99, description: "Calça jeans resistente" },
 ];
 
 const seedDatabase = async () => {
@@ -25,6 +35,10 @@ const seedDatabase = async () => {
       await newUser.save();
       console.log(`User created: ${user.email}`);
     }
+
+    await Product.deleteMany();
+    await Product.insertMany(seedProducts);
+    console.log("Products seeded successfully");
 
     mongoose.connection.close();
     console.log("Seeding completed, connection closed");

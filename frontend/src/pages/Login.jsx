@@ -24,7 +24,7 @@ export default function Login() {
       }
 
       localStorage.setItem("token", data.token);
-      navigate("/home");
+      navigate("/products");
     } catch (err) {
       toast.error(err.message);
     }

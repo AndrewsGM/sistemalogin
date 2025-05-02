@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ mongoose.connection.on("disconnected", () => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1", productRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
